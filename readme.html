@@ -1,0 +1,330 @@
+<html>
+	<head>
+		<title>README: Platform source code structure</title>
+	</head>
+	<body>
+		<!-- Contents -->
+		<h1>Contents</h1>
+		<table>
+			<tr>
+				<td><a href="#Introduction">Introduction</a></td>
+			</tr>
+			<tr>
+				<td><a href="#Dependencies">Dependencies</a></td>
+			</tr>
+			<tr>
+				<td><a href="#Building">Building The Source Code</a></td>
+			</tr>
+			<tr>
+				<td><a href="#Runing">Running The Tests</a></td>
+			</tr>
+			<tr>
+				<td><a href="#Structure">Source Code Structure</a></td>
+			</tr>
+		</table>
+		<a name="Introduction"></a>
+		<h1>Introduction</h1>
+		This document is here to help in the understanding of the main aspects of the 
+		source code provided as part of the dissertation and to enable you to build and 
+		run the solution. It provides information on what packages the source depends 
+		on in order for it to be compiled, the process of how to actually build the 
+		solution and a description of how the source code is structured in order to 
+		help you find your way around. <a name="Dependencies"></a>
+		<h1>Dependencies</h1>
+		The source code makes the use of three other packages that are required to be 
+		installed on your system before the source code can be compiled. These packages 
+		are GLib, SWIG and D-Bus all of which can be found in the <a href="dependencies">dependencies</a>
+		directory on the disk as compressed&nbsp;source code tarballs which can be 
+		installed using the standard ./configure and make cycle. If you have any 
+		problems installing these packages then i will have to refer you to their 
+		respective websites for more information, the addresses given&nbsp;are correct 
+		as of May 2004:-
+		<ul>
+			<li>
+				GLib - <a href="http://www.gtk.org/">http://www.gtk.org/</a>
+			<li>
+				D-Bus - <a href="http://www.freedesktop.org/Software/dbus">http://www.freedesktop.org/Software/dbus</a>
+			<li>
+				SWIG - <a href="http://www.swig.org">http://www.swig.org</a></li>
+		</ul>
+		<a name="Building"></a>
+		<h1>Building the Source Code</h1>
+		<P>
+			Before attempting to build the source code make sure that you have read the 
+			section about the project <a href="#Dependencies">dependencies</a>. The 
+			building process has only been tested on a Redhat Linux distribution but there 
+			is no reason why it shouldn't work on other Linux versions. To make the proces 
+			of compiling the source code easier a <a href="Build/makefile">make file</a> is 
+			provided in the <a href="./build">build</a> directory. In order to use this 
+			make file it requires the pkg-config tool to be installed and configured 
+			correctly so that the header and library files for the the packages described 
+			in the <a href="#Dependencies">dependencies</a> section can be found. If the 
+			tool doesn't work then you will need to replace the pkg-config calls in the 
+			CFLAGS and LIBS lines of the make file with the location of the library and 
+			header files for D-Bus and GLib.&nbsp; Before the first time that you compile 
+			the source code you will need to run</P>
+		<P>make dirs</P>
+		<P>to ensure that all the required directories are created and then after that just 
+			call "make" to build the source.&nbsp; This will result in an executable called 
+			Platform that can be run, see section <a href="#Runing">Running The Tests</a> to 
+			find out how to use this program</P>
+		<P>There is a seperate make file provided for the SWIG implementation that should 
+			be used if you wish to make use of the API from a language other than C. The <a href="./SWIG/makefile">
+				make file</a> builds a shared library and&nbsp;uses the inteface file to 
+			build only Java bindings&nbsp;but other options could easily be added yourself. 
+			In order to compile this section of the solution go to the <a href="./SWIG">SWIG</a>
+			directory and just type "make" at a terminal, the platform code must have been 
+			built prior to compiling the SWIG stuff. This make file has the same reliance 
+			on the pkg-config tool as the make file described above, so similar measures 
+			will have to be taken if pkg-config does not work on your system.</P>
+		<h1>Running The Tests</h1>
+		Before the platform or any of the tests are run the D-Bus session bus must be 
+		started by using the dbus-daemon that would have been installed with the D-Bus 
+		library. The following should be entered at a terminal to do this (assuming 
+		that the dbus-daemon executable is contained within your path variable):<br>
+		<br>
+		dbus-daemon --session --fork --print-address<br>
+		<br>
+		The address that is printed to the terminal window <b>must</b> then be used to 
+		set the environment variable DBUS_SESSION_BUS_ADDRESS before the platform or 
+		any of the tests are executed. This is required to ensure that the 
+		platform/tests are able to connect to the session bus. To help automate this 
+		process two scripts have been supplied in the <a href="./Build">build</a> directory 
+		to do this for you.&nbsp; <a href="./Build/start-bus.sh">Start-bus.sh</a> starts 
+		the D-Bus session bus and outputs the connection address to the screen, and 
+		then <a href="./Build/set-env.sh">set-env.sh</a> can be used to set the 
+		appropriate environment variables. Once this is complete either manually or by 
+		using the scripts&nbsp;you can then run the solution by running the program 
+		"Platform" from the <a href="./Build">build</a> directory. Without any 
+		arguements this will bootstrap the agent platform and put it into a state where 
+		it is ready to serve agents, its progress will be written to the terminal 
+		window. The same program is used to run the tests that demonstrate the 
+		platforms capabilities by passing it some command line arguements to instruct 
+		it which test to perform, the possible arguements are given below. Each test 
+		takes exactly either one or two arguements as specified. In order to run these 
+		tests the platform must have been previously bootstrapped. It is recommended 
+		that the platform be terminated and restarted between each test to avoid 
+		interactions.
+		<p>
+			<table border="1" cellpadding="0" cellspacing="0">
+				<tr>
+					<th bgcolor="#cccccc">
+						First Param</th><th bgcolor="#cccccc">Second Param</th><th bgcolor="#cccccc">Test 
+						Description</th></tr>
+				<tr>
+					<td>amsmod</td>
+					<td>&nbsp;</td>
+					<td>Demonstrates that an agent is able to modify its entry in the AMS directory. It 
+						deliberately bypasses the normal de-registration procedure</td>
+				</tr>
+				<tr>
+					<td>amssearch</td>
+					<td>&nbsp;</td>
+					<td>Searches the AMS for an agent called "server" which should be started up prior 
+						to running this by running the server test giving the name as server</td>
+				</tr>
+				<tr>
+					<td>agent</td>
+					<td>{agent-name}</td>
+					<td>The agent that forms part of the small test agent system that sends a FIPA-ACL 
+						message to agents called server1 and server2 and waits for a response before 
+						exiting. Prioir to running these tests at least the two server agents should 
+						have been started. This demonstrates that the platform is capable of delivery 
+						of multicast FIPA-ACL messages</td>
+				</tr>
+				<tr>
+					<td>boot</td>
+					<td>{agent-name}</td>
+					<td>Tells an agent with the name specified to simply bootstrap and then exit 
+						immediately. This demonstrates that the bootstrap mechanism for agents works</td>
+				</tr>
+				<tr>
+					<td>dfmod</td>
+					<td>&nbsp;</td>
+					<td>Adds an identical entry to the DF as the dfreg test, but then proceeds to 
+						modify it before exiting whilst bypassing the de-registration procedure. This 
+						allows the printdir test to be subsequently run to show that the entry was 
+						indeed modified</td>
+				</tr>
+				<tr>
+					<td>dfreg</td>
+					<td>&nbsp;</td>
+					<td>Demonstrates that an agent is capable of registering an entry with the DF. It 
+						deliberately bypasses the de-registration process so that the printdir test can 
+						be used to show that the registration did indeed take place.</td>
+				</tr>
+				<tr>
+					<td>dfsearch</td>
+					<td>&nbsp;</td>
+					<td>Performs a search in the DF for any agents advertising the "test-ontology". To 
+						demonstrate positive results some server agents should be started prior to this 
+						test</td>
+				</tr>
+				<tr>
+					<td>ping</td>
+					<td>{agent-name}</td>
+					<td>Sends a ping message to the agent with the name that you specify, the name 
+						given should not include the platform name. This test is used to demonstrate 
+						that an agent is contactable and that it has bootstrapped properly</td>
+				</tr>
+				<tr>
+					<td>pings</td>
+					<td>{agent-name}</td>
+					<td>Demonstrates that all of the platform services are contactable on their given 
+						service names by pinging each in turn. The platform will produce a response in 
+						the terminal for each service that received a ping message</td>
+				</tr>
+				<tr>
+					<td>printdir</td>
+					<td>&nbsp;</td>
+					<td>Instructs the AMS and DF to print the contents of their directories in there 
+						entirity to the terminal window. This is used to demonstrate that registration 
+						and de-registration tests have worked as they should</td>
+				</tr>
+				<tr>
+					<td>server</td>
+					<td>{agent-name}</td>
+					<td>Starts up a server agent with the given name that registers with the AMS and DF 
+						and then waits for messages to be sent to it which it prints to the screen. It 
+						responds to each message with "i'm here". This agent is used in other testing 
+						most notably the agent test. It will wait indefinitely for messages so the term 
+						test should be used to end it</td>
+				</tr>
+				<tr>
+					<td>term</td>
+					<td>{agent-name}</td>
+					<td>Tells an agent with the given name to terminate. This is used to gracefully end 
+						a test agent that you no longer wish to run. Used often to end server agents 
+						that wait indefinitely until they receive a terminate message</td>
+				</tr>
+				<tr>
+					<td>terminate</td>
+					<td>&nbsp;</td>
+					<td>Instructs the platform to gracefully terminate. This is the preferred method to 
+						get the platform to finish in between tests</td>
+				</tr>
+			</table>
+		<p>
+			In order to run the SWIG tests a shared library must be built first using the <a href="./SWIG/makefile">
+				make file</a> given in the <a href="./SWIG">SWIG</a> directory. The same 
+			pre-requistite in that the DBUS_SESSION_BUS_ADDRESS evironement variable must 
+			be set before running any of the tests remains for running the Java agents. 
+			Simialr to the C tests the Java tests require a command line parameter in order 
+			to instruct it which test to run. In order to run these tests they should be 
+			called from the SWIG/Java directory from a terminal as follows:
+			<br>
+			<br>
+			[SWIG/Java]$ java -Djava.library.path=../ main {args}<br>
+			<br>
+		This is required so that the test program can find the shared library that 
+		contains the platform code built by the makefile. The tests that the Java agent 
+		is capable of running are given below
+		<p>
+			<table border="1" cellpadding="0" cellspacing="0" ID="Table2">
+				<tr>
+					<th bgcolor="#cccccc">
+						First Param</th><th bgcolor="#cccccc">Second Param</th><th bgcolor="#cccccc">Test 
+						Description</th></tr>
+				<tr>
+					<td>api</td>
+					<td>&nbsp;</td>
+					<td>Creates and maipulates a FIPA-ACL message structure using only API calls and 
+						then prints the results. This demonstrates that the API methods are callable 
+						from Java</td>
+				</tr>
+				<tr>
+					<td>agent</td>
+					<td>{agent-name}</td>
+					<td>Performs the function of the C test "agent" that forms part of the test agent 
+						system. Has the same effect as the C version</td>
+				</tr>
+				<tr>
+					<td>server</td>
+					<td>&nbsp;</td>
+					<td>Bootstraps the agent platform from within Java</td>
+				</tr>
+			</table>
+			<a name="Structure"></a>
+			<h1>Source Code Structure</h1>
+		This section provides a brief overview of the structure of the source to 
+		hopefully point in the right direction so that you can find what you are 
+		looking for. Some of the key files will be briefly highlighted and explained, 
+		as will the directory structure. All of the source and header files contain 
+		header comments that provide more information about their purpose and each 
+		function contains a comment denoting its use and what parameters must be given 
+		to it and what if any value it returns. Therefore these files should be used to 
+		get more detailed information.
+		<p>
+			<table border="1" cellpadding="0" cellspacing="0" ID="Table1">
+				<tr>
+					<th bgcolor="#cccccc">
+						Directory</th><th bgcolor="#cccccc">Explanation</th></tr>
+				<tr>
+					<td><a href="">/</a></td>
+					<td>Contains the main source file which is the entry point for the program. Also 
+						contains the file <a href="platform-defs.h">platform-defs.h</a> which is the 
+						file that contains definitions of all of the C structures that are used 
+						throughout the platform and definitions of constants used throughout. This is 
+						the central location for all the definitions of the core aspects of the 
+						platform, the implementation of the use of this information is given in other 
+						files</td>
+				</tr>
+				<tr>
+					<td><a href="./AMS">/AMS</a></td>
+					<td>Contains the implementaion of the AMS support service</td>
+				</tr>
+				<tr>
+					<td><a href="./API">/API</a></td>
+					<td>This is the implementation of the API which includes all of the publicly 
+						accessible functions that are offered through the SWIG interface. The filenames 
+						have been chosen to be descriptive of the part of the API that they implement. 
+						The two most notable files are <a href="./API/agent.c">agent.c</a> and <a href="./API/platform.c">
+							platform.c</a> that are the files that handle the bootstrap and main 
+						abilities of the agent and the platform respectively.</td>
+				</tr>
+				<tr>
+					<td><a href="./Codec">/Codec</a></td>
+					<td>Implementation of the DBus codec that is used for all communication between the 
+						platform and agents. It encodes all of the platform structures so that they can 
+						be sent as the contents of messages over D-Bus. All of the functions in <a href="./Codec/DBusCodec.c">
+							DBusCodec.c</a> come in pairs one for encoding and an equivalent for 
+						decoding</td>
+				</tr>
+				<tr>
+					<td><a href="./DBus">/DBus</a></td>
+					<td>Functions that are used as helpers when dealing with the DBus as the transport 
+						bus. Packages up some of the commonly rquired procedures that is used by the 
+						platform</td>
+				</tr>
+				<tr>
+					<td><a href="./DF">/DF</a></td>
+					<td>Implementation of the DF support service</td>
+				</tr>
+				<tr>
+					<td><a href="./MTS">/MTS</a></td>
+					<td>Implementation of the interaction layer</td>
+				</tr>
+				<tr>
+					<td><a href="./SWIG">/SWIG</a></td>
+					<td>Implementation of thew SWIG component of the solution that allows the API to be 
+						called from programming languages other than C. <a href="./SWIG/agentPlatform.i">agentPlatorm.i</a>
+						is the interface file that makes the appropraite API functions publicly 
+						accessible. The subdirectory <a href="./SWIG/Java">Java</a> contains the 
+						implementaion of some Java test agents that perform similar functions to the C 
+						test agents and demonstrate that the SWIG implementation works. The code can be 
+						found in <a href="./SWIG/Java/main.java">main.java</a>.</td>
+				</tr>
+				<tr>
+					<td><a href="./Tests">/Tests</a></td>
+					<td>Implementation of the tests that are used to demonstrate the platform and 
+						produce the test results given in the dissertation. Information on how to use 
+						these tests is given in <a href="#Runing">Running The Tests</a>. <a href="./Tests/tests.c">
+							tests.c</a> contains the test driver that determines which test should be 
+						run. Tests that are not agents but are just used to manipulate the platform 
+						structures are found in the same file, all tests that are actually agents that 
+						connect to the platform can be found in <a href="./Tests/test-agents.c">test-agents.c</a></td>
+				</tr>
+			</table>
+		</p>
+	</body>
+</html>
