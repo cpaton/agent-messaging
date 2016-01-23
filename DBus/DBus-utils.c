@@ -32,7 +32,7 @@ gboolean getService(DBusConnection* conn, char* serviceName) {
 	DBusError error;
 	dbus_error_init(&error);
 	int retVal;
-	retVal = dbus_bus_acquire_service(conn, serviceName, 1, &error);
+	retVal = dbus_bus_request_name(conn, serviceName, DBUS_NAME_FLAG_DO_NOT_QUEUE, &error);
 	if (retVal == -1) {		
 		dbus_error_free(&error);
 		return FALSE;
@@ -56,7 +56,8 @@ DBusConnection* getDBusConnection() {
 	gError = NULL;
 		
 	//connect to the session bus and integrate it with a GLib
-	conn = dbus_bus_get_with_g_main(DBUS_BUS_SESSION, &gError);
+	conn = dbus_bus_get(DBUS_BUS_SESSION, &error);
+	dbus_connection_setup_with_g_main(&conn, &gError);
 	if (conn == NULL) {
 		//we were unable to connect to the session bus
 		g_error("Unable to connect to the session bus %s", gError->message);
@@ -83,7 +84,7 @@ DBusConnection* getDBusConnection() {
  */
 GString* getBaseService(DBusConnection* conn) {
 	const char* baseService;
-	baseService = dbus_bus_get_base_service(conn);
+	baseService = dbus_bus_get_unique_name(conn);
 	GString* str = g_string_new((char*)baseService);
 	return str;	
 }

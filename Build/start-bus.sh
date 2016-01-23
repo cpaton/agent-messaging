@@ -1,3 +1,3 @@
-dbus-daemon-1 --session --fork --print-address > ./address.txt
+dbus-daemon --session --fork --print-address > ./address.txt
 cat ./address.txt
 

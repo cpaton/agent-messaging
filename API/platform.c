@@ -63,19 +63,34 @@ DBusHandlerResult TerminateHandler(DBusConnection* connection, DBusMessage *msg,
 void bootstrapPlatform() {
 	//set up the default handler to just print messages to the terminal window	
 	g_log_set_handler(NULL,  G_LOG_LEVEL_MASK, myLogHandler, NULL);	
+
+	g_message("Bootstrapping platform");
 	
 	//connect the platform to the session bus
 	GError* gError;	
 	DBusError error;
 	DBusConnection* conn;
 	GMainLoop* mainLoop  = g_main_loop_new(NULL, FALSE);
+
+	g_message("Main loop created");
 			
 	//perform initialisation
 	dbus_error_init(&error);
 	gError = NULL;
 		
 	//connect to the session bus and integrate it with a GLib
-	conn = dbus_bus_get_with_g_main(DBUS_BUS_SESSION, &gError);
+	conn = dbus_bus_get(DBUS_BUS_SESSION, &error);
+
+	//if (conn == NULL) {
+		//g_message("Got NULL DBUS connection");
+	//}
+	//else {
+		//g_message("Got DBUS connection");
+	//}
+
+	dbus_connection_setup_with_g_main(conn, NULL);
+
+	g_message("Connected DBUS with GLib");
 	if (conn == NULL) {
 		//we were unable to connect to the session bus
 		g_error("Unable to connect to the session bus %s", gError->message);
@@ -88,12 +103,12 @@ void bootstrapPlatform() {
 	
 	//get the base service of this connection
 	const char* baseService;
-	baseService = dbus_bus_get_base_service(conn);
+	baseService = dbus_bus_get_unique_name(conn);
 	g_message("Platform base service is %s", baseService);
 	
 	//acquire the platform service
 	int retVal;
-	retVal = dbus_bus_acquire_service(conn, PLATFORM_SERVICE, 1, &error);
+	retVal = dbus_bus_request_name(conn, PLATFORM_SERVICE, DBUS_NAME_FLAG_DO_NOT_QUEUE, &error);
 	if (retVal == -1) {
 		g_error("Platform unable to acquire the service %s (%s)", PLATFORM_SERVICE, error.message);
 		dbus_error_free(&error);

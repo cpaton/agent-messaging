@@ -266,7 +266,7 @@ AgentConfiguration* AP_newAgent(char* agentName, APError* err) {
 	//check to see if the platform service can be found
 	DBusError error;
 	dbus_error_init(&error);
-	if (!dbus_bus_service_exists(conn, PLATFORM_SERVICE, &error)) {
+	if (!dbus_bus_name_has_owner(conn, PLATFORM_SERVICE, &error)) {
 		APSetError(err, ERROR_PLATFORM_NOT_FOUND);
 		return NULL;
 	}
@@ -345,8 +345,8 @@ void deRegisterAgent(AgentConfiguration* agent, APError* err) {
 	
 	//build the content of the message
 	DBusMessageIter iter;
-	dbus_message_iter_init(msg, &iter);
-	dbus_message_iter_append_string(&iter, agent->identifier->name->str);
+	dbus_message_iter_init_append(msg, &iter);
+	dbus_message_iter_append_basic(&iter, DBUS_TYPE_STRING, agent->identifier->name->str);
 	
 	reply = dbus_connection_send_with_reply_and_block(agent->connection, msg, WAIT_TIME, &error);
 	if (reply == NULL) {
@@ -380,7 +380,7 @@ void deRegisterAgentFromDF(AgentConfiguration* agent, APError* err) {
 	
 	//build the content of the message
 	DBusMessageIter iter;
-	dbus_message_iter_init(msg, &iter);
+	dbus_message_iter_init_append(msg, &iter);
 	encodeString(&iter, agent->identifier->name);
 	//dbus_message_iter_append_string(&iter, agent->identifier->name->str);
 	
@@ -428,7 +428,7 @@ void AP_finish(AgentConfiguration* agent, APError* err) {
 	}
 	
 	//disconnect from the DBus
-	dbus_connection_disconnect(agent->connection);
+	dbus_connection_close(agent->connection);
 }
 
 /* Modifies the agents entry in the AMS, implementing the agent end of the AMS
@@ -490,8 +490,8 @@ GArray* AP_searchAMS(AgentConfiguration* agent, char* name, APError* err) {
 	
 	//build the content of the message
 	DBusMessageIter iter;
-	dbus_message_iter_init(msg, &iter);
-	dbus_message_iter_append_string(&iter, agentName->str);
+	dbus_message_iter_init_append(msg, &iter);
+	dbus_message_iter_append_basic(&iter, DBUS_TYPE_STRING, agentName->str);
 	
 	reply = dbus_connection_send_with_reply_and_block(agent->connection, msg, WAIT_TIME, &error);
 	if (reply == NULL) {

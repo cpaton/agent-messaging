@@ -46,7 +46,7 @@ void runTests(char** argv) {
 		sendTestMessage(conn, PLATFORM_SERVICE, MTS_SERVICE_PATH, MSG_PING);
 		sendTestMessage(conn, PLATFORM_SERVICE, AMS_SERVICE_PATH, MSG_PING);
 		sendTestMessage(conn, PLATFORM_SERVICE, DF_SERVICE_PATH, MSG_PING);
-		dbus_connection_disconnect(conn);
+		dbus_connection_close(conn);
 		printf("********* Finished Ping The Platform Services Tests **********\n");
 	}
 	else if (strcmp(argv[1], "ping") == 0) {
@@ -55,7 +55,7 @@ void runTests(char** argv) {
 		GString* service = g_string_new("ap.");
 		g_string_sprintfa(service, argv[2]);
 		sendTestMessage(conn, service->str, MANAGEMENT_PATH, MSG_PING);			
-		dbus_connection_disconnect(conn);
+		dbus_connection_close(conn);
 		printf("********* Finished the Ping Boot Tests **********\n");
 	}
 	else if (strcmp(argv[1], "term") == 0) {
@@ -64,7 +64,7 @@ void runTests(char** argv) {
 		GString* service = g_string_new("ap.");
 		g_string_sprintfa(service, argv[2]);
 		sendTestMessage(conn, service->str, MANAGEMENT_PATH, MSG_TERMINATE);			
-		dbus_connection_disconnect(conn);
+		dbus_connection_close(conn);
 		printf("********* Finished the Terminate Tests **********\n");
 	}
 	else if (strcmp(argv[1], "amsmsg") == 0) {
@@ -73,7 +73,7 @@ void runTests(char** argv) {
 		sendTestMessage(conn, PLATFORM_SERVICE, AMS_SERVICE_PATH, MSG_PING);
 		sendTestMessage(conn, PLATFORM_SERVICE, AMS_SERVICE_PATH, MSG_PRINT_AGENT_DIRECTORY);
 		sendTestMessage(conn, PLATFORM_SERVICE, AMS_SERVICE_PATH, MSG_GET_DESCRIPTION);
-		dbus_connection_disconnect(conn);
+		dbus_connection_close(conn);
 		printf("********* Finished the AMS msg Tests **********\n");
 	}
 	else if (strcmp(argv[1], "dfmsg") == 0) {
@@ -85,14 +85,14 @@ void runTests(char** argv) {
 		sendTestMessage(conn, PLATFORM_SERVICE, DF_SERVICE_PATH, MSG_DF_DEREGISTER);
 		sendTestMessage(conn, PLATFORM_SERVICE, DF_SERVICE_PATH, MSG_DF_MODIFY);
 		sendTestMessage(conn, PLATFORM_SERVICE, DF_SERVICE_PATH, MSG_DF_SEARCH);
-		dbus_connection_disconnect(conn);
+		dbus_connection_close(conn);
 		printf("********* Finished the AMS msg Tests **********\n");
 	}
 	else if (strcmp(argv[1], "terminate") == 0) {
 		printf("********* Running the Terminate Tests **********\n");
 		DBusConnection* conn = getConnection();
 		sendTestMessage(conn, PLATFORM_SERVICE, TERMINATE_PATH, MSG_PING);
-		dbus_connection_disconnect(conn);
+		dbus_connection_close(conn);
 		printf("********* Finished the Terminate Tests **********\n");
 	}
 	else if (strcmp(argv[1], "printdir") == 0) {
@@ -100,7 +100,7 @@ void runTests(char** argv) {
 		DBusConnection* conn = getConnection();
 		sendTestMessage(conn, PLATFORM_SERVICE, AMS_SERVICE_PATH, MSG_PRINT_AGENT_DIRECTORY);
 		sendTestMessage(conn, PLATFORM_SERVICE, DF_SERVICE_PATH, MSG_PRINT_AGENT_DIRECTORY);
-		dbus_connection_disconnect(conn);
+		dbus_connection_close(conn);
 		printf("********* Finished the Print Directory Tests **********\n");
 	}		
 	else if (strcmp(argv[1], "temp") == 0) {

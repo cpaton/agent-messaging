@@ -141,7 +141,8 @@ void handleSearch(DBusMessage* msg) {
 	//get the content of the message
 	DBusMessageIter iter;
 	dbus_message_iter_init(msg, &iter);
-	char* name = dbus_message_iter_get_string(&iter);
+	char* name;
+	dbus_message_iter_get_basic(&iter, &name);
 	g_message("AMS: looking for agent with name %s", name);
 	
 	//now perform the search	
@@ -180,7 +181,8 @@ void handleDeRegister(DBusMessage* msg) {
 	//get the content of the message
 	DBusMessageIter iter;
 	dbus_message_iter_init(msg, &iter);
-	char* agentName = dbus_message_iter_get_string(&iter);
+	char* agentName;
+	dbus_message_iter_get_basic(&iter, &agentName);
 	g_message("AMS: agent to de-register is %s", agentName);
 
 	//now de register the agent from the platform	
@@ -334,7 +336,7 @@ void AMS_start(DBusConnection* conn, GMainLoop* mainLoop, gchar* baseService) {
  */
 void AMS_end() {
 	g_message("AMS disconnecting from the DBus");
-	dbus_connection_disconnect(theAMS.configuration->connection);
+	dbus_connection_close(theAMS.configuration->connection);
 	g_string_free(theAMS.configuration->baseService, TRUE);
 }
 

@@ -230,6 +230,6 @@ void MTS_start(DBusConnection* conn, GMainLoop* mainLoop, gchar* baseService) {
 void MTS_end() {
 	//disconnect from the bus
 	g_message("MTS Disconnecting from the bus");
-	dbus_connection_disconnect(theMTS.configuration->connection);
+	dbus_connection_close(theMTS.configuration->connection);
 }
 

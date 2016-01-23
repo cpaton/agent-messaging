@@ -279,7 +279,7 @@ void DF_start(DBusConnection* conn, GMainLoop* mainLoop, gchar* baseService) {
  */
 void DF_end() {
 	g_message("DF: disconnecting from the DBus");
-	dbus_connection_disconnect(theDF.configuration->connection);
+	dbus_connection_close(theDF.configuration->connection);
 	g_string_free(theDF.configuration->baseService, TRUE);
 }
 
