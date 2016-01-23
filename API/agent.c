@@ -226,7 +226,7 @@ void setUpMessageListner(AgentConfiguration* agent, APError* err) {
 	DBusObjectPathVTable vTable;
 	vTable.unregister_function = agentUnregFunction;
 	vTable.message_function = agentMessageHandler;
-	if (!dbus_connection_register_object_path(agent->connection, MESSAGE_PATH_ARRAY, 
+	if (!dbus_connection_register_object_path(agent->connection, MESSAGE_PATH, 
 		&vTable, agent)) {
 		APSetError(err, ERROR_MESSAGE_LISTENER);	
 	}
@@ -235,7 +235,7 @@ void setUpMessageListner(AgentConfiguration* agent, APError* err) {
 	DBusObjectPathVTable vTable2;
 	vTable2.unregister_function = agentUnregFunction;
 	vTable2.message_function = agentManagementHandler;
-	if (!dbus_connection_register_object_path(agent->connection, MANAGEMENT_PATH_ARRAY, 
+	if (!dbus_connection_register_object_path(agent->connection, MANAGEMENT_PATH, 
 		&vTable2, agent)) {
 		APSetError(err, ERROR_MESSAGE_LISTENER);	
 	}	

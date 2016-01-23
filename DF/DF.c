@@ -261,7 +261,7 @@ void DF_start(DBusConnection* conn, GMainLoop* mainLoop, gchar* baseService) {
 	DBusObjectPathVTable vTable;
 	vTable.unregister_function = DFUnregFunction;
 	vTable.message_function = DFMessageHandler;
-	if (!dbus_connection_register_object_path(theDF.configuration->connection, DF_SERVICE_PATH_ARRAY, 
+	if (!dbus_connection_register_object_path(theDF.configuration->connection, DF_SERVICE_PATH, 
 		&vTable, NULL)) {
 		g_error("Unable to register the handler for the AMS service");
 		exit(1);		

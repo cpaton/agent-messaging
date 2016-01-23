@@ -80,14 +80,6 @@ void bootstrapPlatform() {
 		
 	//connect to the session bus and integrate it with a GLib
 	conn = dbus_bus_get(DBUS_BUS_SESSION, &error);
-
-	//if (conn == NULL) {
-		//g_message("Got NULL DBUS connection");
-	//}
-	//else {
-		//g_message("Got DBUS connection");
-	//}
-
 	dbus_connection_setup_with_g_main(conn, NULL);
 
 	g_message("Connected DBUS with GLib");
@@ -128,8 +120,7 @@ void bootstrapPlatform() {
 	DBusObjectPathVTable termVTable;
 	termVTable.unregister_function = PlatformUnregFunction;
 	termVTable.message_function = TerminateHandler;
-	if (!dbus_connection_register_object_path(conn, TERMINATE_PATH_ARRAY, 
-		&termVTable, mainLoop)) {
+	if (!dbus_connection_register_object_path(conn, TERMINATE_PATH, &termVTable, mainLoop)) {
 		g_error("Unable to register the handler for the terminating the Platform");
 		exit(1);		
 	}

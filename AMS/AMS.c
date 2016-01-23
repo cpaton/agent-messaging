@@ -321,7 +321,7 @@ void AMS_start(DBusConnection* conn, GMainLoop* mainLoop, gchar* baseService) {
 	DBusObjectPathVTable vTable;
 	vTable.unregister_function = AMSUnregFunction;
 	vTable.message_function = AMSMessageHandler;
-	if (!dbus_connection_register_object_path(theAMS.configuration->connection, AMS_SERVICE_PATH_ARRAY, 
+	if (!dbus_connection_register_object_path(theAMS.configuration->connection, AMS_SERVICE_PATH, 
 		&vTable, NULL)) {
 		g_error("Unable to register the handler for the AMS service");
 		exit(1);		
