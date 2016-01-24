@@ -53,7 +53,7 @@ void runTests(char** argv) {
 		printf("********* Running the Ping Boot Tests **********\n");
 		DBusConnection* conn = getConnection();
 		GString* service = g_string_new("ap.");
-		g_string_sprintfa(service, argv[2]);
+		g_string_append_printf(service, "%s", argv[2]);
 		sendTestMessage(conn, service->str, MANAGEMENT_PATH, MSG_PING);			
 		dbus_connection_unref(conn);
 		printf("********* Finished the Ping Boot Tests **********\n");
@@ -62,7 +62,7 @@ void runTests(char** argv) {
 		printf("********* Running the Terminate Tests **********\n");
 		DBusConnection* conn = getConnection();
 		GString* service = g_string_new("ap.");
-		g_string_sprintfa(service, argv[2]);
+		g_string_append_printf(service, "%s", argv[2]);
 		sendTestMessage(conn, service->str, MANAGEMENT_PATH, MSG_TERMINATE);			
 		dbus_connection_unref(conn);
 		printf("********* Finished the Terminate Tests **********\n");
@@ -198,7 +198,7 @@ void AIDTest() {
 	AIDAddAddress(&id, "DBUS::1.3");	
 	
 	GString* str = AIDToString(id);
-	g_message(str->str);
+	g_message("%s", str->str);
 	g_string_free(str, TRUE);
 	
 	//clone the structure and try printing it again
@@ -206,7 +206,7 @@ void AIDTest() {
 	AID* temp = AIDClone(id);
 	g_message("Printing out the cloned structure");
 	str = AIDToString(*temp);
-	g_message(str->str);
+	g_message("%s", str->str);
 	g_string_free(str, TRUE);
 	
 	g_message("Freeing the AID struct");
@@ -239,13 +239,13 @@ void ACLTest() {
 	
 	//print the message to the screen
 	GString* temp = ACLMessageToString(msg);
-	g_message(temp->str);
+	g_message("%s", temp->str);
 	g_string_free(temp, TRUE);
 	
 	//create a reply to the message
 	ACLMessage* reply = ACLMessageCreateReply(msg);
 	temp = ACLMessageToString(reply);
-	g_message(temp->str);
+	g_message("%s", temp->str);
 	g_string_free(temp, TRUE);
 	
 	

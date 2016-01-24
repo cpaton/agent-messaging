@@ -37,7 +37,7 @@ GString* getTransportableAddress(AID* id) {
 	int i;
 	for (i=0; id->addresses->len; i++) {
 		GString* gstr = g_array_index(id->addresses, GString*, i);
-		if (g_strncasecmp(gstr->str, dbusProtocol->str, dbusProtocol->len) == 0)
+		if (g_ascii_strncasecmp(gstr->str, dbusProtocol->str, dbusProtocol->len) == 0)
 			return gstr;
 	}
 	return NULL;
@@ -159,11 +159,11 @@ void MTS_handleMessage(DBusMessage* msg) {
 DBusHandlerResult MTSMessageHandler(DBusConnection* connection, DBusMessage *msg, void *userData) {
 //check what the member is that is being called
 	const char* method = dbus_message_get_member(msg);
-	if (g_strcasecmp(MSG_PING, method) == 0) {
+	if (g_ascii_strcasecmp(MSG_PING, method) == 0) {
 		//just output that we have received the message
 		g_message("MTS: Ping message received from %s", dbus_message_get_sender(msg));
 	}
-	if (g_strcasecmp(MTS_MSG, method) == 0) {
+	if (g_ascii_strcasecmp(MTS_MSG, method) == 0) {
 		//just output that we have received the message
 		g_message("MTS: Received route request from %s", dbus_message_get_sender(msg));
 		MTS_handleMessage(msg);

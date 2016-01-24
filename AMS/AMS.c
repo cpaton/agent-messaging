@@ -243,32 +243,32 @@ void sendDescription(DBusMessage* msg) {
 DBusHandlerResult AMSMessageHandler(DBusConnection* connection, DBusMessage *msg, void *userData) {
 	//check what the member is that is being called
 	const char* method = dbus_message_get_member(msg);
-	if (g_strcasecmp(MSG_PING, method) == 0) {
+	if (g_ascii_strcasecmp(MSG_PING, method) == 0) {
 		//just output that we have received the message
 		g_message("AMS: Ping message received from %s", dbus_message_get_sender(msg));
 	}
-	else if (g_strcasecmp(MSG_PRINT_AGENT_DIRECTORY, method) == 0) {
+	else if (g_ascii_strcasecmp(MSG_PRINT_AGENT_DIRECTORY, method) == 0) {
 		//print out the directory to the screen
 		AMS_printDirectory();
 	}
-	else if (g_strcasecmp(MSG_AMS_DEREGISTER, method) == 0) {
+	else if (g_ascii_strcasecmp(MSG_AMS_DEREGISTER, method) == 0) {
 		//print out the directory to the screen
 		g_message("AMS: received de-register request from %s", dbus_message_get_sender(msg));
 		handleDeRegister(msg);
 	}		
-	else if (g_strcasecmp(MSG_GET_DESCRIPTION, method) == 0) {
+	else if (g_ascii_strcasecmp(MSG_GET_DESCRIPTION, method) == 0) {
 		g_message("AMS: received request for platform description from %s", dbus_message_get_sender(msg));
 		sendDescription(msg);
 	}
-	else if (g_strcasecmp(MSG_AMS_REGISTER, method) == 0) {
+	else if (g_ascii_strcasecmp(MSG_AMS_REGISTER, method) == 0) {
 		g_message("AMS: received register request from %s", dbus_message_get_sender(msg));
 		handleRegister(msg);
 	}
-	else if (g_strcasecmp(MSG_AMS_MODIFY, method) == 0) {
+	else if (g_ascii_strcasecmp(MSG_AMS_MODIFY, method) == 0) {
 		g_message("AMS: received modify request from %s", dbus_message_get_sender(msg));
 		handleModify(msg);
 	}
-	else if (g_strcasecmp(MSG_AMS_SEARCH, method) == 0) {
+	else if (g_ascii_strcasecmp(MSG_AMS_SEARCH, method) == 0) {
 		g_message("AMS: received search request from %s", dbus_message_get_sender(msg));
 		handleSearch(msg);
 	}			
@@ -399,7 +399,7 @@ int AMS_agentExists(GString* name) {
 	int i;
 	for (i=0; i < theAMS.agentDirectory->len; i++) {
 		AID* id = g_array_index(theAMS.agentDirectory, AID*, i);
-		if (g_strcasecmp(id->name->str, name->str) == 0) return i;
+		if (g_ascii_strcasecmp(id->name->str, name->str) == 0) return i;
 	}
 	return -1;
 }

@@ -15,6 +15,7 @@
 #include "agent.h"
 #include "../util.h"
 #include "../DBus/DBus-utils.h"
+#include <dbus/dbus-glib-lowlevel.h>
 #include "../Codec/codecs.h"
 #include "API.h"
 #include <stdio.h>
@@ -55,11 +56,11 @@ DBusHandlerResult agentManagementHandler(DBusConnection* connection, DBusMessage
 	AgentConfiguration* agent = (AgentConfiguration*)userData;
 	
 	const char* method = dbus_message_get_member(msg);
-	if (g_strcasecmp(MSG_PING, method) == 0) {
+	if (g_ascii_strcasecmp(MSG_PING, method) == 0) {
 		//just output that we have received the message
 		g_message("MANAGEMENT: Ping message received from %s", dbus_message_get_sender(msg));
 	}
-	else if (g_strcasecmp(MSG_TERMINATE, method) == 0) {
+	else if (g_ascii_strcasecmp(MSG_TERMINATE, method) == 0) {
 		g_main_quit(agent->mainLoop);
 	}	
 	else {
@@ -107,7 +108,7 @@ DBusHandlerResult agentMessageHandler(DBusConnection* connection, DBusMessage *m
 	AgentConfiguration* agent = (AgentConfiguration*)userData;
 	
 	const char* method = dbus_message_get_member(msg);
-	if (g_strcasecmp(MTS_MSG, method) == 0) {		
+	if (g_ascii_strcasecmp(MTS_MSG, method) == 0) {		
 		handleReceivedMessage(agent, msg);
 	}	
 	else {
@@ -158,13 +159,13 @@ void getPlatformDescription(AgentConfiguration* agent, APError* err) {
 	int i;
 	for (i=0; i<platform->services->len; i++) {
 		PlatformServiceDescription* service = g_array_index(platform->services, PlatformServiceDescription*, i);
-		if (g_strcasecmp(service->name->str, MTS_NAME) == 0) {
+		if (g_ascii_strcasecmp(service->name->str, MTS_NAME) == 0) {
 			agent->MTSAddress = service->address;
 		}
-		else if (g_strcasecmp(service->name->str, AMS_NAME) == 0) {
+		else if (g_ascii_strcasecmp(service->name->str, AMS_NAME) == 0) {
 			agent->AMSAddress = service->address;
 		}
-		else if (g_strcasecmp(service->name->str, DF_NAME) == 0) {
+		else if (g_ascii_strcasecmp(service->name->str, DF_NAME) == 0) {
 			agent->DFAddress = service->address;
 		}			
 	}		
@@ -208,7 +209,7 @@ void registerAgent(AgentConfiguration* agent, APError* err) {
 	DBusMessageIter replyIter;
 	dbus_message_iter_init(reply, &replyIter);
 	GString* returnVal = decodeReply(&replyIter);
-	if (g_strcasecmp(returnVal->str, RETURN_OK) !=0) {
+	if (g_ascii_strcasecmp(returnVal->str, RETURN_OK) !=0) {
 		APSetError(err, returnVal->str);
 		return;
 	}
@@ -359,7 +360,7 @@ void deRegisterAgent(AgentConfiguration* agent, APError* err) {
 	DBusMessageIter replyIter;
 	dbus_message_iter_init(reply, &replyIter);
 	GString* returnVal = decodeReply(&replyIter);
-	if (g_strcasecmp(returnVal->str, RETURN_OK) !=0) {
+	if (g_ascii_strcasecmp(returnVal->str, RETURN_OK) !=0) {
 		APSetError(err, returnVal->str);
 		return;
 	}
@@ -395,7 +396,7 @@ void deRegisterAgentFromDF(AgentConfiguration* agent, APError* err) {
 	DBusMessageIter replyIter;
 	dbus_message_iter_init(reply, &replyIter);
 	GString* returnVal = decodeReply(&replyIter);
-	if (g_strcasecmp(returnVal->str, RETURN_OK) !=0) {
+	if (g_ascii_strcasecmp(returnVal->str, RETURN_OK) !=0) {
 		APSetError(err, returnVal->str);
 		return;
 	}
@@ -462,7 +463,7 @@ void AP_modifyAMSEntry(AgentConfiguration* agent, APError* err) {
 	DBusMessageIter replyIter;
 	dbus_message_iter_init(reply, &replyIter);
 	GString* returnVal = decodeReply(&replyIter);
-	if (g_strcasecmp(returnVal->str, RETURN_OK) !=0) {
+	if (g_ascii_strcasecmp(returnVal->str, RETURN_OK) !=0) {
 		APSetError(err, returnVal->str);
 		return;
 	}	
@@ -539,7 +540,7 @@ void AP_registerWithDF(AgentConfiguration* agent, APError* err) {
 	DBusMessageIter replyIter;
 	dbus_message_iter_init(reply, &replyIter);
 	GString* returnVal = decodeReply(&replyIter);
-	if (g_strcasecmp(returnVal->str, RETURN_OK) !=0) {
+	if (g_ascii_strcasecmp(returnVal->str, RETURN_OK) !=0) {
 		APSetError(err, returnVal->str);
 		return;
 	}	
@@ -573,7 +574,7 @@ void AP_modifyDFEntry(AgentConfiguration* agent, APError* err) {
 	DBusMessageIter replyIter;
 	dbus_message_iter_init(reply, &replyIter);
 	GString* returnVal = decodeReply(&replyIter);
-	if (g_strcasecmp(returnVal->str, RETURN_OK) !=0) {
+	if (g_ascii_strcasecmp(returnVal->str, RETURN_OK) !=0) {
 		APSetError(err, returnVal->str);
 		return;
 	}
@@ -655,7 +656,7 @@ void AP_send(AgentConfiguration* agent, ACLMessage* msg, APError* err) {
 		APSetError(err, ERROR_PERFORMATIVE_REQUIRED);
 		return;		
 	}
-	if (g_strcasecmp(msg->performative->str, "") == 0) {
+	if (g_ascii_strcasecmp(msg->performative->str, "") == 0) {
 		APSetError(err, ERROR_PERFORMATIVE_REQUIRED);
 		return;		
 	}

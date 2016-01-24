@@ -44,7 +44,7 @@ GString* getMachineName() {
 	
 	GString* str = g_string_new(hostName);
 	//check to see whether we hav received (none)
-	if (g_strcasecmp(domainName, "(none)") != 0)
+	if (g_ascii_strcasecmp(domainName, "(none)") != 0)
 		g_string_sprintfa(str, ".%s", domainName);
 	return str; 	
 }

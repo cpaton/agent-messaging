@@ -60,7 +60,7 @@ void decodeParameter(DBusMessageIter* iter, GString** parameter, GString** value
 	(*parameter) = g_string_new(read);
 	dbus_message_iter_next(iter);
 	dbus_message_iter_get_basic(iter, &read);	
-	if (g_strcasecmp(read, "") == 0) {
+	if (g_ascii_strcasecmp(read, "") == 0) {
 		(*value) = NULL;
 	}
 	else {
@@ -92,7 +92,7 @@ GString* decodeString(DBusMessageIter* iter) {
 	char* value;
 	dbus_message_iter_get_basic(iter, &value);
 	GString* gstr;
-	if (g_strcasecmp("", value) == 0)
+	if (g_ascii_strcasecmp("", value) == 0)
 		return NULL;
 	else
 		gstr = g_string_new(value);

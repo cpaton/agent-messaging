@@ -20,5 +20,6 @@ void DF_registerEntry(AgentDFDescription* entry, APError* error);
 int DF_entryExists(GString* name);
 void DF_printDirectory();
 GArray* DF_search(AgentDFDescription* template, APError* error);
+gboolean matches(AgentDFDescription* entry, AgentDFDescription* template);
 
 #endif

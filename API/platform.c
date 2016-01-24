@@ -11,6 +11,7 @@
 #include "../platform-defs.h"
 #include <dbus/dbus.h>
 #include <dbus/dbus-glib.h>
+#include <dbus/dbus-glib-lowlevel.h>
 #include <stdlib.h>
 #include "../util.h"
 #include "API.h"

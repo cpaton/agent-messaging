@@ -119,7 +119,7 @@ void AMSSearchAgent(char* name) {
 		for (i=0; i<results->len; i++) {
 			AID* id = g_array_index(results, AID*, i);
 			GString* str = AIDToString(*id);
-			g_message(str->str);
+			g_message("%s", str->str);
 			g_string_free(str, TRUE);
 		}
 	}

@@ -189,31 +189,31 @@ void DFhandleRegister(DBusMessage* msg) {
 DBusHandlerResult DFMessageHandler(DBusConnection* connection, DBusMessage *msg, void *userData) {
 	//check what the member is that is being called
 	const char* method = dbus_message_get_member(msg);
-	if (g_strcasecmp(MSG_PING, method) == 0) {
+	if (g_ascii_strcasecmp(MSG_PING, method) == 0) {
 		//just output that we have received the message
 		g_message("DF: Ping message received from %s", dbus_message_get_sender(msg));
 	}
-	else if (g_strcasecmp(MSG_PRINT_AGENT_DIRECTORY, method) == 0) {
+	else if (g_ascii_strcasecmp(MSG_PRINT_AGENT_DIRECTORY, method) == 0) {
 		//just output that we have received the message
 		g_message("DF: print directory request received from %s", dbus_message_get_sender(msg));
 		DF_printDirectory();
 	}
-	else if (g_strcasecmp(MSG_DF_REGISTER, method) == 0) {
+	else if (g_ascii_strcasecmp(MSG_DF_REGISTER, method) == 0) {
 		//just output that we have received the message
 		g_message("DF: register request received from %s", dbus_message_get_sender(msg));
 		DFhandleRegister(msg);
 	}
-	else if (g_strcasecmp(MSG_DF_SEARCH, method) == 0) {
+	else if (g_ascii_strcasecmp(MSG_DF_SEARCH, method) == 0) {
 		//just output that we have received the message
 		g_message("DF: search request received from %s", dbus_message_get_sender(msg));
 		DFHandleSearch(msg);
 	}
-	else if (g_strcasecmp(MSG_DF_MODIFY, method) == 0) {
+	else if (g_ascii_strcasecmp(MSG_DF_MODIFY, method) == 0) {
 		//just output that we have received the message
 		g_message("DF: modify request received from %s", dbus_message_get_sender(msg));
 		DFhandleModify(msg);
 	}
-	else if (g_strcasecmp(MSG_DF_DEREGISTER, method) == 0) {
+	else if (g_ascii_strcasecmp(MSG_DF_DEREGISTER, method) == 0) {
 		//just output that we have received the message
 		g_message("DF: de-register request received from %s", dbus_message_get_sender(msg));
 		DFhandleDeRegister(msg);
@@ -315,7 +315,7 @@ int DF_entryExists(GString* name) {
 	for (i=0; i<theDF.agentDirectory->len; i++) {
 		AgentDFDescription* entry = g_array_index(theDF.agentDirectory, AgentDFDescription*, i);
 		//check to see if the names match
-		if (g_strcasecmp(entry->id->name->str, name->str) == 0)
+		if (g_ascii_strcasecmp(entry->id->name->str, name->str) == 0)
 			return i;
 	}
 	return -1;
@@ -356,7 +356,7 @@ gboolean matchString(GString* entry, GString* template, gboolean partialMatch) {
 		return TRUE;
 	else if (partialMatch) {
 		//check to see if the start of the strings match
-		if (g_strncasecmp(entry->str, template->str, template->len) == 0)
+		if (g_ascii_strncasecmp(entry->str, template->str, template->len) == 0)
 			return TRUE;		
 		else
 			return FALSE;
