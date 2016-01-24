@@ -194,7 +194,7 @@ void registerAgent(AgentConfiguration* agent, APError* err) {
 	
 	//build the content of the message
 	DBusMessageIter iter;
-	dbus_message_iter_init(msg, &iter);
+	dbus_message_iter_init_append(msg, &iter);
 	encodeAID(&iter, agent->identifier);	
 	
 	//send the register request and wait for a reply from the AMS
@@ -323,6 +323,8 @@ AgentConfiguration* AP_newAgent(char* agentName, APError* err) {
 	agent->baseService = getBaseService(agent->connection);
 	agent->mainLoop = g_main_loop_new(NULL, FALSE);
 	agent->DFEntry->id = agent->identifier;
+
+	dbus_connection_setup_with_g_main(agent->connection, NULL);
 	
 	return agent;
 }
@@ -339,14 +341,13 @@ void deRegisterAgent(AgentConfiguration* agent, APError* err) {
 	dbus_error_init(&error);
 	
 	//create a new method call
-	DBusMessage* msg = dbus_message_new_method_call(PLATFORM_SERVICE, 
-	 	AMS_SERVICE_PATH, PLATFORM_SERVICE, MSG_AMS_DEREGISTER);
+	DBusMessage* msg = dbus_message_new_method_call(PLATFORM_SERVICE, AMS_SERVICE_PATH, PLATFORM_SERVICE, MSG_AMS_DEREGISTER);
 	DBusMessage* reply;
 	
 	//build the content of the message
 	DBusMessageIter iter;
 	dbus_message_iter_init_append(msg, &iter);
-	dbus_message_iter_append_basic(&iter, DBUS_TYPE_STRING, agent->identifier->name->str);
+	dbus_message_iter_append_basic(&iter, DBUS_TYPE_STRING, &agent->identifier->name->str);
 	
 	reply = dbus_connection_send_with_reply_and_block(agent->connection, msg, WAIT_TIME, &error);
 	if (reply == NULL) {
@@ -428,7 +429,7 @@ void AP_finish(AgentConfiguration* agent, APError* err) {
 	}
 	
 	//disconnect from the DBus
-	dbus_connection_close(agent->connection);
+	dbus_connection_unref(agent->connection);
 }
 
 /* Modifies the agents entry in the AMS, implementing the agent end of the AMS
@@ -448,7 +449,7 @@ void AP_modifyAMSEntry(AgentConfiguration* agent, APError* err) {
 	
 	//build the content of the message
 	DBusMessageIter iter;
-	dbus_message_iter_init(msg, &iter);
+	dbus_message_iter_init_append(msg, &iter);
 	encodeAID(&iter, agent->identifier);
 	
 	reply = dbus_connection_send_with_reply_and_block(agent->connection, msg, WAIT_TIME, &error);
@@ -491,7 +492,7 @@ GArray* AP_searchAMS(AgentConfiguration* agent, char* name, APError* err) {
 	//build the content of the message
 	DBusMessageIter iter;
 	dbus_message_iter_init_append(msg, &iter);
-	dbus_message_iter_append_basic(&iter, DBUS_TYPE_STRING, agentName->str);
+	dbus_message_iter_append_basic(&iter, DBUS_TYPE_STRING, &agentName->str);
 	
 	reply = dbus_connection_send_with_reply_and_block(agent->connection, msg, WAIT_TIME, &error);
 	if (reply == NULL) {
@@ -526,7 +527,7 @@ void AP_registerWithDF(AgentConfiguration* agent, APError* err) {
 	
 	//build the content of the message
 	DBusMessageIter iter;
-	dbus_message_iter_init(msg, &iter);
+	dbus_message_iter_init_append(msg, &iter);
 	encodeDFEntry(&iter, agent->DFEntry);
 	
 	reply = dbus_connection_send_with_reply_and_block(agent->connection, msg, WAIT_TIME, &error);
@@ -560,7 +561,7 @@ void AP_modifyDFEntry(AgentConfiguration* agent, APError* err) {
 	
 	//build the content of the message
 	DBusMessageIter iter;
-	dbus_message_iter_init(msg, &iter);
+	dbus_message_iter_init_append(msg, &iter);
 	encodeDFEntry(&iter, agent->DFEntry);
 	
 	reply = dbus_connection_send_with_reply_and_block(agent->connection, msg, WAIT_TIME, &error);
@@ -595,7 +596,7 @@ GArray* AP_searchDF(AgentConfiguration* agent, AgentDFDescription* template, APE
 	
 	//build the content of the message
 	DBusMessageIter iter;
-	dbus_message_iter_init(msg, &iter);
+	dbus_message_iter_init_append(msg, &iter);
 	encodeDFEntry(&iter, template);
 	
 	reply = dbus_connection_send_with_reply_and_block(agent->connection, msg, WAIT_TIME, &error);
@@ -686,7 +687,7 @@ void AP_send(AgentConfiguration* agent, ACLMessage* msg, APError* err) {
 	
 	//build the content of the message
 	DBusMessageIter iter;
-	dbus_message_iter_init(DBusMsg, &iter);
+	dbus_message_iter_init_append(DBusMsg, &iter);
 	encodeAgentMessage(&iter, message);
 	
 	//send the message without expecting a reply

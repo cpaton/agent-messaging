@@ -113,7 +113,7 @@ void deliverMessage(AgentMessage* message) {
 	
 	//put the envelope and the message into this method call
 	DBusMessageIter iter;
-	dbus_message_iter_init(msg, &iter);
+	dbus_message_iter_init_append(msg, &iter);
 	encodeAgentMessage(&iter, message);
 	
 	//now send the message to the agent
@@ -230,6 +230,6 @@ void MTS_start(DBusConnection* conn, GMainLoop* mainLoop, gchar* baseService) {
 void MTS_end() {
 	//disconnect from the bus
 	g_message("MTS Disconnecting from the bus");
-	dbus_connection_close(theMTS.configuration->connection);
+	dbus_connection_unref(theMTS.configuration->connection);
 }
 

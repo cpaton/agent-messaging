@@ -72,7 +72,7 @@ void handleRegister(DBusMessage* msg) {
 	//build the reply to the message
 	reply = dbus_message_new_method_return(msg);
 	DBusMessageIter replyIter;
-	dbus_message_iter_init(reply, &replyIter);
+	dbus_message_iter_init_append(reply, &replyIter);
 	encodeReply(&replyIter, retVal->str);
 	
 	//send the reply back
@@ -118,7 +118,7 @@ void handleModify(DBusMessage* msg) {
 	//build the reply to the message
 	reply = dbus_message_new_method_return(msg);
 	DBusMessageIter replyIter;
-	dbus_message_iter_init(reply, &replyIter);
+	dbus_message_iter_init_append(reply, &replyIter);
 	encodeReply(&replyIter, retVal->str);
 	
 	//send the reply back
@@ -157,7 +157,7 @@ void handleSearch(DBusMessage* msg) {
 	//build the reply to the message
 	reply = dbus_message_new_method_return(msg);
 	DBusMessageIter replyIter;
-	dbus_message_iter_init(reply, &replyIter);
+	dbus_message_iter_init_append(reply, &replyIter);
 	g_message("AMS: found %d matches", results->len);
 	encodeAIDArray(&replyIter, results);
 	
@@ -198,7 +198,7 @@ void handleDeRegister(DBusMessage* msg) {
 	//build the reply to the message
 	reply = dbus_message_new_method_return(msg);
 	DBusMessageIter replyIter;
-	dbus_message_iter_init(reply, &replyIter);
+	dbus_message_iter_init_append(reply, &replyIter);
 	encodeReply(&replyIter, retVal->str);
 	
 	//send the reply back
@@ -221,10 +221,10 @@ void sendDescription(DBusMessage* msg) {
 	//create the reply to the message that has been sent
 	DBusMessage* reply;
 	reply = dbus_message_new_method_return(msg);
-	
+
 	//build up the content of the message
 	DBusMessageIter args;
-	dbus_message_iter_init(reply,&args);	
+	dbus_message_iter_init_append(reply,&args);	
 	encodePlatformDescription(&args, theAMS.platformDescription);
 	
 	//send the reply	
@@ -336,7 +336,7 @@ void AMS_start(DBusConnection* conn, GMainLoop* mainLoop, gchar* baseService) {
  */
 void AMS_end() {
 	g_message("AMS disconnecting from the DBus");
-	dbus_connection_close(theAMS.configuration->connection);
+	dbus_connection_unref(theAMS.configuration->connection);
 	g_string_free(theAMS.configuration->baseService, TRUE);
 }
 

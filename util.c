@@ -57,9 +57,11 @@ GString* getMachineName() {
 GString* stringArrayToString(GArray* array) {
 	int i;
 	GString* str = g_string_new("");
-	for (i=0; i<array->len; i++) {
-		GString* temp = g_array_index(array, GString*, i);
-		g_string_sprintfa(str, "%s ", temp->str);
+	if (array != NULL) {
+		for (i=0; i<array->len; i++) {
+			GString* temp = g_array_index(array, GString*, i);
+			g_string_sprintfa(str, "%s ", temp->str);
+		}
 	}
 	return str;
 }

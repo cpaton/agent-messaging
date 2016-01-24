@@ -48,7 +48,7 @@ void DFHandleSearch(DBusMessage* msg) {
 	//send back the reply to the user	
 	reply = dbus_message_new_method_return(msg);
 	DBusMessageIter replyIter;
-	dbus_message_iter_init(reply, &replyIter);
+	dbus_message_iter_init_append(reply, &replyIter);
 	encodeDFEntryArray(&replyIter, matches);
 	
 	//send the reply back
@@ -98,7 +98,7 @@ void DFhandleModify(DBusMessage* msg) {
 	//build the reply to the message
 	reply = dbus_message_new_method_return(msg);
 	DBusMessageIter replyIter;
-	dbus_message_iter_init(reply, &replyIter);
+	dbus_message_iter_init_append(reply, &replyIter);
 	encodeReply(&replyIter, retVal->str);
 	
 	//send the reply back
@@ -133,7 +133,7 @@ void DFhandleDeRegister(DBusMessage* msg) {
 	//build the reply to the message
 	reply = dbus_message_new_method_return(msg);
 	DBusMessageIter replyIter;
-	dbus_message_iter_init(reply, &replyIter);
+	dbus_message_iter_init_append(reply, &replyIter);
 	encodeReply(&replyIter, retVal->str);
 	
 	//send the reply back
@@ -173,7 +173,7 @@ void DFhandleRegister(DBusMessage* msg) {
 	//build the reply to the message
 	reply = dbus_message_new_method_return(msg);
 	DBusMessageIter replyIter;
-	dbus_message_iter_init(reply, &replyIter);
+	dbus_message_iter_init_append(reply, &replyIter);
 	encodeReply(&replyIter, retVal->str);
 	
 	//send the reply back
@@ -279,7 +279,7 @@ void DF_start(DBusConnection* conn, GMainLoop* mainLoop, gchar* baseService) {
  */
 void DF_end() {
 	g_message("DF: disconnecting from the DBus");
-	dbus_connection_close(theDF.configuration->connection);
+	dbus_connection_unref(theDF.configuration->connection);
 	g_string_free(theDF.configuration->baseService, TRUE);
 }
 
@@ -324,7 +324,7 @@ int DF_entryExists(GString* name) {
 /* used for testing and debuggin purposes - outputs the contents of the DF registry 
  * to the default log
  */
-void DF_printDirectory() {
+void DF_printDirectory() {	
 	g_message("There are %d entries in the DF directory", theDF.agentDirectory->len);
 	int i;
 	for (i=0; i<theDF.agentDirectory->len; i++) {
@@ -352,7 +352,7 @@ gboolean matchString(GString* entry, GString* template, gboolean partialMatch) {
 	if (entry == NULL) return FALSE;
 	
 	//now compare the strings
-	if (g_strcasecmp(entry->str, template->str) == 0)
+	if (g_ascii_strcasecmp(entry->str, template->str) == 0)
 		return TRUE;
 	else if (partialMatch) {
 		//check to see if the start of the strings match

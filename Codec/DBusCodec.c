@@ -37,12 +37,13 @@ gboolean checkType(DBusMessageIter* iter, int type) {
  * value - the value of the parameter
  */
 void encodeParameter(DBusMessageIter* iter, GString* parameter, GString* value) {
-	dbus_message_iter_append_basic(iter, DBUS_TYPE_STRING, parameter->str);
+	dbus_message_iter_append_basic(iter, DBUS_TYPE_STRING, &parameter->str);
 	if (value == NULL) {
-		dbus_message_iter_append_basic(iter, DBUS_TYPE_STRING, "");
+		GString* value = g_string_new("");
+		dbus_message_iter_append_basic(iter, DBUS_TYPE_STRING, &value->str);
 	}
 	else {
-		dbus_message_iter_append_basic(iter, DBUS_TYPE_STRING, value->str);
+		dbus_message_iter_append_basic(iter, DBUS_TYPE_STRING, &value->str);
 	}
 }
 
@@ -73,10 +74,12 @@ void decodeParameter(DBusMessageIter* iter, GString** parameter, GString** value
  * str - the string to be appended
  */
 void encodeString(DBusMessageIter* iter, GString* str) {
-	if (str == NULL)
-		dbus_message_iter_append_basic(iter, DBUS_TYPE_STRING, "");
+	if (str == NULL) {
+		GString* value = g_string_new("");
+		dbus_message_iter_append_basic(iter, DBUS_TYPE_STRING, &value->str);
+	}
 	else
-		dbus_message_iter_append_basic(iter, DBUS_TYPE_STRING, str->str);
+		dbus_message_iter_append_basic(iter, DBUS_TYPE_STRING, &str->str);
 }
 
 /* reads a string value from a message, it does not move the iterator onto the next
@@ -115,7 +118,7 @@ void encodeStringArray(DBusMessageIter* iter, GArray* array) {
 	for (i=0; i < array->len; i++) {
 		GString* str = g_array_index(array, GString*, i);
 
-		dbus_message_iter_append_basic(&arrayIter, DBUS_TYPE_STRING, str->str);
+		dbus_message_iter_append_basic(&arrayIter, DBUS_TYPE_STRING, &str->str);
 		//strArray[i] = g_new(char, (str->len)+1);
 		//strArray[i] = strcpy(str->str, strArray[i]);		
 	}
@@ -165,8 +168,8 @@ GArray* decodeStringArray(DBusMessageIter* iter) {
  * desc - the platform description structure to be encoded
  */
 void encodePlatformDescription(DBusMessageIter* iter, PlatformDescription* desc) {
-	dbus_message_iter_append_basic(iter, DBUS_TYPE_STRING, desc->name->str);
-	
+	dbus_message_iter_append_basic(iter, DBUS_TYPE_STRING, &desc->name->str);
+
 	//now encode each of the platform services
 	int i;
 	for (i=0; i < desc->services->len; i++) {
@@ -215,7 +218,7 @@ void encodeAID(DBusMessageIter* iter, AID* aid) {
 	}
 	else {
 		encodeString(iter, aid->name);
-		//dbus_message_iter_append_basic(iter, aid->name->str);
+		//dbus_message_iter_append_basic(iter, &aid->name->str);
 		encodeStringArray(iter, aid->addresses);
 	}
 }
@@ -253,7 +256,7 @@ AID* decodeAID(DBusMessageIter* iter) {
  * message - the string that should be added to the message
  */
 void encodeReply(DBusMessageIter* iter, char* message) {
-	dbus_message_iter_append_basic(iter, DBUS_TYPE_STRING, message);
+	dbus_message_iter_append_basic(iter, DBUS_TYPE_STRING, &message);
 }
 
 /* gets the message contained in a simple reply from one of the platform services
@@ -279,7 +282,7 @@ GString* decodeReply(DBusMessageIter* iter) {
  */
 void encodeAIDArray(DBusMessageIter* iter, GArray* array) {
 	//first of all output the length
-	dbus_message_iter_append_basic(iter, DBUS_TYPE_INT32, array->len);
+	dbus_message_iter_append_basic(iter, DBUS_TYPE_INT32, &array->len);
 	
 	//now output all of the AID's
 	int i;
@@ -300,7 +303,7 @@ GArray* decodeAIDArray(DBusMessageIter* iter) {
 	GArray* array = g_array_new(FALSE, FALSE, sizeof(AID*));
 	
 	//read in the number of entries
-	int number;
+	int number;	
 	dbus_message_iter_get_basic(iter, &number);
 	dbus_message_iter_next(iter);
 	
@@ -322,7 +325,7 @@ GArray* decodeAIDArray(DBusMessageIter* iter) {
  */
 void encodeDFServiceArray(DBusMessageIter* iter, GArray* array) {
 	//first of all output the number of entries
-	dbus_message_iter_append_basic(iter, DBUS_TYPE_INT32, array->len);
+	dbus_message_iter_append_basic(iter, DBUS_TYPE_INT32, &array->len);
 	
 	//then output each service in turn
 	int i;
@@ -446,19 +449,19 @@ AgentDFDescription* decodeDFEntry(DBusMessageIter* iter) {
 	
 	//first of all read off the agent identifier
 	entry->id = decodeAID(iter);
-	
+
 	//read off the protocols
 	entry->protocols = decodeStringArray(iter);
-	
+
 	//read off the ontologies
 	entry->ontologies = decodeStringArray(iter);
-	
+
 	//read off the languages
 	entry->languages = decodeStringArray(iter);
-	
+
 	//read off the services
 	entry->services = decodeDFServiceArray(iter);	
-	
+
 	return entry;
 }
 
@@ -470,7 +473,7 @@ AgentDFDescription* decodeDFEntry(DBusMessageIter* iter) {
  */
 void encodeDFEntryArray(DBusMessageIter* iter, GArray* array) {
 	//output the number of entries
-	dbus_message_iter_append_basic(iter, DBUS_TYPE_INT32, array->len);
+	dbus_message_iter_append_basic(iter, DBUS_TYPE_INT32, &array->len);
 	
 	//now output each entry
 	int i;

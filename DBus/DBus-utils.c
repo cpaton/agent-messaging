@@ -52,16 +52,11 @@ DBusConnection* getDBusConnection() {
 	DBusConnection* conn;
 	dbus_error_init(&error);	
 	
-	GError* gError;
-	gError = NULL;
-		
 	//connect to the session bus and integrate it with a GLib
 	conn = dbus_bus_get(DBUS_BUS_SESSION, &error);
-	dbus_connection_setup_with_g_main(&conn, &gError);
 	if (conn == NULL) {
 		//we were unable to connect to the session bus
-		g_error("Unable to connect to the session bus %s", gError->message);
-		g_error_free(gError);
+		g_error("Unable to connect to the session bus");
 		return NULL;		
 	}	
 	
