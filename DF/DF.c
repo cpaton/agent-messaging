@@ -234,6 +234,7 @@ DBusHandlerResult DFMessageHandler(DBusConnection* connection, DBusMessage *msg,
 void DF_start(DBusConnection* conn, GMainLoop* mainLoop, gchar* baseService) {
 	DBusError error;
 	dbus_error_init(&error);
+	dbus_connection_ref(conn);
 
 	//set up the AMS configuration
 	theDF.configuration = g_new(AgentConfiguration, 1);

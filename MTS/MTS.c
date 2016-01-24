@@ -185,6 +185,7 @@ DBusHandlerResult MTSMessageHandler(DBusConnection* connection, DBusMessage *msg
 void MTS_start(DBusConnection* conn, GMainLoop* mainLoop, gchar* baseService) {
 	DBusError error;
 	dbus_error_init(&error);	
+	dbus_connection_ref(conn);
 
 	//GString* tttt = g_string_new(baseService);
 		
