@@ -23,10 +23,10 @@ all: Platform
 	@echo Build Complete
 
 Platform: $(OBJS)
-	$(CC) -oPlatform $(OBJS) $(CFLAGS) $(LIBS)
+	$(CC) -oPlatform $(OBJS) -g $(CFLAGS) $(LIBS)
 	
 %.o : 
-	$(CC) -c $(SOURCE_ROOT)$(@D)/$(*F).c -o$(ROOT)$(@D)/$(*F).o $(CFLAGS)
+	$(CC) -c $(SOURCE_ROOT)$(@D)/$(*F).c -o$(ROOT)$(@D)/$(*F).o -g $(CFLAGS)
 
 clean: 
 	rm $(OBJS)
